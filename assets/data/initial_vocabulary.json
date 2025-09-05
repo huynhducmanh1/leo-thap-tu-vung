@@ -1,0 +1,122 @@
+[
+  {
+    "id": "vocab_001",
+    "word": "hello",
+    "wordType": "other",
+    "vietnameseMeaning": "xin chào",
+    "englishDefinition": "A greeting used when meeting someone.",
+    "ipaPhonetic": "/həˈloʊ/",
+    "exampleSentence": "She said hello to the new student.",
+    "pronunciationAudioUrl": "gs://your-bucket-name/audio/hello.mp3",
+    "synonyms": ["hi", "greetings"],
+    "pictureUrl": null
+  },
+  {
+    "id": "vocab_002",
+    "word": "water",
+    "wordType": "noun",
+    "vietnameseMeaning": "nước",
+    "englishDefinition": "A colorless, transparent, odorless liquid that forms the seas, lakes, rivers, and rain.",
+    "ipaPhonetic": "/ˈwɔːtər/",
+    "exampleSentence": "Please drink plenty of water.",
+    "pronunciationAudioUrl": "gs://your-bucket-name/audio/water.mp3",
+    "synonyms": null,
+    "pictureUrl": "gs://your-bucket-name/images/water.jpg"
+  },
+  {
+    "id": "vocab_003",
+    "word": "market",
+    "wordType": "noun",
+    "vietnameseMeaning": "chợ, thị trường",
+    "englishDefinition": "A regular gathering of people for the purchase and sale of provisions, livestock, and other commodities.",
+    "ipaPhonetic": "/ˈmɑːrkɪt/",
+    "exampleSentence": "We bought fresh vegetables from the market.",
+    "pronunciationAudioUrl": "gs://your-bucket-name/audio/market.mp3",
+    "synonyms": ["bazaar", "exchange"],
+    "pictureUrl": null
+  },
+  {
+    "id": "vocab_004",
+    "word": "family",
+    "wordType": "noun",
+    "vietnameseMeaning": "gia đình",
+    "englishDefinition": "A group consisting of parents and children living together in a household.",
+    "ipaPhonetic": "/ˈfæməli/",
+    "exampleSentence": "He loves spending time with his family.",
+    "pronunciationAudioUrl": "gs://your-bucket-name/audio/family.mp3",
+    "synonyms": ["relatives", "kin"],
+    "pictureUrl": "gs://your-bucket-name/images/family.jpg"
+  },
+  {
+    "id": "vocab_005",
+    "word": "decision",
+    "wordType": "noun",
+    "vietnameseMeaning": "quyết định",
+    "englishDefinition": "A conclusion or resolution reached after consideration.",
+    "ipaPhonetic": "/dɪˈsɪʒən/",
+    "exampleSentence": "It was a very difficult decision to make.",
+    "pronunciationAudioUrl": "gs://your-bucket-name/audio/decision.mp3",
+    "synonyms": ["choice", "judgment"],
+    "pictureUrl": null
+  },
+  {
+    "id": "vocab_006",
+    "word": "environment",
+    "wordType": "noun",
+    "vietnameseMeaning": "môi trường",
+    "englishDefinition": "The surroundings or conditions in which a person, animal, or plant lives or operates.",
+    "ipaPhonetic": "/ɪnˈvaɪrənmənt/",
+    "exampleSentence": "We need to protect the environment.",
+    "pronunciationAudioUrl": "gs://your-bucket-name/audio/environment.mp3",
+    "synonyms": ["surroundings", "atmosphere"],
+    "pictureUrl": null
+  },
+  {
+    "id": "vocab_007",
+    "word": "economy",
+    "wordType": "noun",
+    "vietnameseMeaning": "nền kinh tế",
+    "englishDefinition": "The state of a country or region in terms of the production and consumption of goods and services.",
+    "ipaPhonetic": "/ɪˈkɑːnəmi/",
+    "exampleSentence": "The country's economy is growing fast.",
+    "pronunciationAudioUrl": "gs://your-bucket-name/audio/economy.mp3",
+    "synonyms": null,
+    "pictureUrl": null
+  },
+  {
+    "id": "vocab_008",
+    "word": "negotiate",
+    "wordType": "verb",
+    "vietnameseMeaning": "đàm phán, thương lượng",
+    "englishDefinition": "To obtain or bring about by discussion.",
+    "ipaPhonetic": "/nəˈɡoʊʃieɪt/",
+    "exampleSentence": "The government will not negotiate with terrorists.",
+    "pronunciationAudioUrl": "gs://your-bucket-name/audio/negotiate.mp3",
+    "synonyms": ["bargain", "discuss terms"],
+    "pictureUrl": null
+  },
+  {
+    "id": "vocab_009",
+    "word": "infrastructure",
+    "wordType": "noun",
+    "vietnameseMeaning": "cơ sở hạ tầng",
+    "englishDefinition": "The basic physical and organizational structures and facilities needed for the operation of a society.",
+    "ipaPhonetic": "/ˈɪnfrəstrʌktʃər/",
+    "exampleSentence": "The government invested heavily in infrastructure.",
+    "pronunciationAudioUrl": "gs://your-bucket-name/audio/infrastructure.mp3",
+    "synonyms": ["foundation", "framework"],
+    "pictureUrl": null
+  },
+  {
+    "id": "vocab_010",
+    "word": "photosynthesis",
+    "wordType": "noun",
+    "vietnameseMeaning": "quang hợp",
+    "englishDefinition": "The process by which green plants use sunlight to synthesize foods from carbon dioxide and water.",
+    "ipaPhonetic": "/ˌfoʊtəˈsɪnθəsɪs/",
+    "exampleSentence": "Photosynthesis is vital for life on Earth.",
+    "pronunciationAudioUrl": "gs://your-bucket-name/audio/photosynthesis.mp3",
+    "synonyms": [],
+    "pictureUrl": null
+  }
+]

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "167673247748",
+    "project_id": "leothaptuvung",
+    "storage_bucket": "leothaptuvung.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:167673247748:android:c786e08027a51d63ef5d51",
+        "android_client_info": {
+          "package_name": "com.example.leo_thap_tu_vung"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjSJMSrIba8g9MO4t8dBXWVrRXhSjdHgQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
