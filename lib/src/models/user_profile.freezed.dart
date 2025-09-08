@@ -15,8 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserProfile {
 
- String get id;// Same as the Firebase Auth UID
- String get email; int get level; int get xp;
+ String get id; String get email; int get level; int get xp;// CORRECTED: Added the missing activeCourseId field
+ String? get activeCourseId;
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $UserProfileCopyWith<UserProfile> get copyWith => _$UserProfileCopyWithImpl<User
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.level, level) || other.level == level)&&(identical(other.xp, xp) || other.xp == xp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.level, level) || other.level == level)&&(identical(other.xp, xp) || other.xp == xp)&&(identical(other.activeCourseId, activeCourseId) || other.activeCourseId == activeCourseId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,level,xp);
+int get hashCode => Object.hash(runtimeType,id,email,level,xp,activeCourseId);
 
 @override
 String toString() {
-  return 'UserProfile(id: $id, email: $email, level: $level, xp: $xp)';
+  return 'UserProfile(id: $id, email: $email, level: $level, xp: $xp, activeCourseId: $activeCourseId)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $UserProfileCopyWith<$Res>  {
   factory $UserProfileCopyWith(UserProfile value, $Res Function(UserProfile) _then) = _$UserProfileCopyWithImpl;
 @useResult
 $Res call({
- String id, String email, int level, int xp
+ String id, String email, int level, int xp, String? activeCourseId
 });
 
 
@@ -66,13 +66,14 @@ class _$UserProfileCopyWithImpl<$Res>
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? level = null,Object? xp = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? email = null,Object? level = null,Object? xp = null,Object? activeCourseId = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,level: null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
 as int,xp: null == xp ? _self.xp : xp // ignore: cast_nullable_to_non_nullable
-as int,
+as int,activeCourseId: freezed == activeCourseId ? _self.activeCourseId : activeCourseId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -157,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  int level,  int xp)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String email,  int level,  int xp,  String? activeCourseId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserProfile() when $default != null:
-return $default(_that.id,_that.email,_that.level,_that.xp);case _:
+return $default(_that.id,_that.email,_that.level,_that.xp,_that.activeCourseId);case _:
   return orElse();
 
 }
@@ -178,10 +179,10 @@ return $default(_that.id,_that.email,_that.level,_that.xp);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  int level,  int xp)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String email,  int level,  int xp,  String? activeCourseId)  $default,) {final _that = this;
 switch (_that) {
 case _UserProfile():
-return $default(_that.id,_that.email,_that.level,_that.xp);case _:
+return $default(_that.id,_that.email,_that.level,_that.xp,_that.activeCourseId);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +199,10 @@ return $default(_that.id,_that.email,_that.level,_that.xp);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  int level,  int xp)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String email,  int level,  int xp,  String? activeCourseId)?  $default,) {final _that = this;
 switch (_that) {
 case _UserProfile() when $default != null:
-return $default(_that.id,_that.email,_that.level,_that.xp);case _:
+return $default(_that.id,_that.email,_that.level,_that.xp,_that.activeCourseId);case _:
   return null;
 
 }
@@ -213,14 +214,15 @@ return $default(_that.id,_that.email,_that.level,_that.xp);case _:
 @JsonSerializable()
 
 class _UserProfile implements UserProfile {
-  const _UserProfile({required this.id, required this.email, this.level = 1, this.xp = 0});
+  const _UserProfile({required this.id, required this.email, this.level = 1, this.xp = 0, this.activeCourseId});
   factory _UserProfile.fromJson(Map<String, dynamic> json) => _$UserProfileFromJson(json);
 
 @override final  String id;
-// Same as the Firebase Auth UID
 @override final  String email;
 @override@JsonKey() final  int level;
 @override@JsonKey() final  int xp;
+// CORRECTED: Added the missing activeCourseId field
+@override final  String? activeCourseId;
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.level, level) || other.level == level)&&(identical(other.xp, xp) || other.xp == xp));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProfile&&(identical(other.id, id) || other.id == id)&&(identical(other.email, email) || other.email == email)&&(identical(other.level, level) || other.level == level)&&(identical(other.xp, xp) || other.xp == xp)&&(identical(other.activeCourseId, activeCourseId) || other.activeCourseId == activeCourseId));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,email,level,xp);
+int get hashCode => Object.hash(runtimeType,id,email,level,xp,activeCourseId);
 
 @override
 String toString() {
-  return 'UserProfile(id: $id, email: $email, level: $level, xp: $xp)';
+  return 'UserProfile(id: $id, email: $email, level: $level, xp: $xp, activeCourseId: $activeCourseId)';
 }
 
 
@@ -255,7 +257,7 @@ abstract mixin class _$UserProfileCopyWith<$Res> implements $UserProfileCopyWith
   factory _$UserProfileCopyWith(_UserProfile value, $Res Function(_UserProfile) _then) = __$UserProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String email, int level, int xp
+ String id, String email, int level, int xp, String? activeCourseId
 });
 
 
@@ -272,13 +274,14 @@ class __$UserProfileCopyWithImpl<$Res>
 
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? level = null,Object? xp = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? email = null,Object? level = null,Object? xp = null,Object? activeCourseId = freezed,}) {
   return _then(_UserProfile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,email: null == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String,level: null == level ? _self.level : level // ignore: cast_nullable_to_non_nullable
 as int,xp: null == xp ? _self.xp : xp // ignore: cast_nullable_to_non_nullable
-as int,
+as int,activeCourseId: freezed == activeCourseId ? _self.activeCourseId : activeCourseId // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

@@ -6,10 +6,11 @@ part 'user_profile.g.dart';
 @freezed
 abstract class UserProfile with _$UserProfile {
   const factory UserProfile({
-    required String id, // Same as the Firebase Auth UID
+    required String id,
     required String email,
     @Default(1) int level,
     @Default(0) int xp,
+    String? activeCourseId,
   }) = _UserProfile;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>

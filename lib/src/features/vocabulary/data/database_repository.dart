@@ -51,6 +51,15 @@ class DatabaseRepository {
     return _userProfileRef(user.uid).set(profile);
   }
 
+  Future<void> setActiveCourse({
+    required String userId,
+    required String courseId,
+  }) {
+    return _firestore.collection('users').doc(userId).update({
+      'activeCourseId': courseId,
+    });
+  }
+
   Stream<UserProfile> watchUserProfile({required String userId}) {
     return _userProfileRef(userId).snapshots().map((snapshot) => snapshot.data()!);
   }
