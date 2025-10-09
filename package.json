@@ -1,0 +1,17 @@
+{
+  "name": "flutter-claude-tools",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "claude": "node claude-project.js",
+    "claude-preview": "node claude-project.js --preview",
+    "claude-stream": "node claude-project.js --stream"
+  },
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "dotenv": "^17.2.3",
+    "glob": "^11.0.3",
+    "ignore": "^7.0.5",
+    "openai": "^4.104.0"
+  }
+}

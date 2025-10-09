@@ -15,16 +15,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+
+  // --- NEW: FocusNodes to manage focus ---
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
+
+  // --- NEW: State variables for UX ---
   bool _isLoading = false;
+  bool _isPasswordObscured = true;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
   Future<void> _login() async {
+    // Hide the keyboard
+    FocusScope.of(context).unfocus();
+
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       try {
@@ -66,8 +78,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 32),
                 TextFormField(
                   controller: _emailController,
+                  focusNode: _emailFocusNode, // Assign FocusNode
                   decoration: const InputDecoration(labelText: 'Email'),
                   keyboardType: TextInputType.emailAddress,
+                  // --- NEW: Smart Focus Logic ---
+                  onFieldSubmitted: (_) {
+                    // When user presses Enter, move to the password field
+                    FocusScope.of(context).requestFocus(_passwordFocusNode);
+                  },
                   validator: (value) =>
                       (value == null || !value.contains('@'))
                           ? 'Please enter a valid email'
@@ -76,8 +94,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Mật khẩu'),
-                  obscureText: true,
+                  focusNode: _passwordFocusNode, // Assign FocusNode
+                  obscureText: _isPasswordObscured, // Use state variable
+                  decoration: InputDecoration(
+                    labelText: 'Mật khẩu',
+                    // --- NEW: Password Visibility Toggle ---
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _isPasswordObscured
+                            ? Icons.visibility_off
+                            : Icons.visibility,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _isPasswordObscured = !_isPasswordObscured;
+                        });
+                      },
+                    ),
+                  ),
+                  // --- NEW: Enter to Submit Logic ---
+                  onFieldSubmitted: (_) => _login(),
                   validator: (value) => (value == null || value.length < 6)
                       ? 'Password cannot be empty'
                       : null,

@@ -1,3 +1,8 @@
+# Claude files
+.env
+.claude-cache.json
+*.backup
+
 # Miscellaneous
 *.class
 *.log

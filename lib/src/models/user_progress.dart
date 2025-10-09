@@ -17,12 +17,17 @@ class TimestampConverter implements JsonConverter<DateTime, Timestamp> {
 }
 
 @freezed
-// CORRECTED: Added the 'abstract' keyword
 abstract class UserProgress with _$UserProgress {
   const factory UserProgress({
     required String vocabularyId,
     required int srsStage,
     @TimestampConverter() required DateTime nextReviewDate,
+    @Default(0) int correctStreak,
+    @Default(0) int totalReviews,
+    @Default(0) int correctReviews,
+    @Default(1.0) double difficultyMultiplier,
+    @TimestampConverter() DateTime? lastReviewDate,
+    @Default(false) bool isLearned,
   }) = _UserProgress;
 
   factory UserProgress.fromJson(Map<String, dynamic> json) =>

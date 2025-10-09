@@ -8,13 +8,14 @@ import 'package:leo_thap_tu_vung/src/features/auth/presentation/login_screen.dar
 import 'package:leo_thap_tu_vung/src/features/auth/presentation/registration_screen.dart';
 import 'package:leo_thap_tu_vung/src/features/auth/presentation/splash_screen.dart';
 import 'package:leo_thap_tu_vung/src/features/dashboard/presentation/home_screen.dart';
+import 'package:leo_thap_tu_vung/src/features/landing/presentation/landing_screen.dart';
 import 'package:leo_thap_tu_vung/src/features/lesson/presentation/lesson_screen.dart';
 import 'package:leo_thap_tu_vung/src/features/review/presentation/review_screen.dart';
 import 'package:leo_thap_tu_vung/src/features/review/presentation/review_summary_screen.dart';
 
-
 enum AppRoute {
   splash,
+  landing,
   login,
   register,
   home,
@@ -28,32 +29,32 @@ final goRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     initialLocation: '/splash',
+    // CORRECTED: Use ref.watch(provider.stream) to get the raw stream
     refreshListenable: GoRouterRefreshStream(
       ref.watch(authStateChangesProvider.stream),
     ),
     redirect: (BuildContext context, GoRouterState state) {
-      // NEW: If the auth state is still loading, don't redirect anywhere.
-      // The SplashScreen will be shown.
+      final loggedIn = authState.value != null;
+      final onAuthRoute = state.matchedLocation == '/' ||
+          state.matchedLocation == '/login' ||
+          state.matchedLocation == '/register';
+
       if (authState.isLoading || authState.hasError) {
+        // Show splash screen while loading
+        if (state.matchedLocation != '/splash') return '/splash';
         return null;
       }
 
-      final loggedIn = authState.value != null;
-      final onAuthScreen =
-          state.matchedLocation == '/login' || state.matchedLocation == '/register';
-
-      // If the user is on the splash screen AFTER the auth state has resolved,
-      // decide where to go.
       if (state.matchedLocation == '/splash') {
-        return loggedIn ? '/home' : '/login';
+        return loggedIn ? '/home' : '/';
       }
 
-      if (!loggedIn && !onAuthScreen) {
-        return '/login';
-      }
-
-      if (loggedIn && onAuthScreen) {
+      if (loggedIn && onAuthRoute) {
         return '/home';
+      }
+
+      if (!loggedIn && !onAuthRoute) {
+        return '/';
       }
 
       return null;
@@ -63,6 +64,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/splash',
         name: AppRoute.splash.name,
         builder: (context, state) => const SplashScreen(),
+      ),
+      GoRoute(
+        path: '/',
+        name: AppRoute.landing.name,
+        builder: (context, state) => const LandingScreen(),
       ),
       GoRoute(
         path: '/login',
@@ -84,12 +90,12 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         name: AppRoute.lesson.name,
         builder: (context, state) => const LessonScreen(),
       ),
-      GoRoute( // <-- ADD THIS ENTIRE BLOCK
+      GoRoute(
         path: '/review',
         name: AppRoute.review.name,
         builder: (context, state) => const ReviewScreen(),
       ),
-      GoRoute( // <-- ADD THIS ENTIRE BLOCK
+      GoRoute(
         path: '/review-summary',
         name: AppRoute.reviewSummary.name,
         builder: (context, state) => const ReviewSummaryScreen(),

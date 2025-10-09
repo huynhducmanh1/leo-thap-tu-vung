@@ -2,69 +2,92 @@ import 'dart:math';
 
 import 'package:leo_thap_tu_vung/src/models/user_progress.dart';
 
-/// SrsService handles all the business logic for the Spaced Repetition System.
-/// It determines the next review date and SRS stage for a vocabulary item
-/// based on the user's performance.
+/// Enhanced SRS Service with adaptive intervals and difficulty adjustments
 class SrsService {
-  /// Defines the time intervals for each SRS stage, based on the WaniKani model.
-  /// The key is the SRS stage (1-8), and the value is the duration until the
-  /// next review.
-  static const Map<int, Duration> _srsIntervals = {
-    1: Duration(hours: 4),    // Apprentice 1 -> Apprentice 2
-    2: Duration(hours: 8),    // Apprentice 2 -> Apprentice 3
-    3: Duration(hours: 23),   // Apprentice 3 -> Apprentice 4
-    4: Duration(days: 2),     // Apprentice 4 -> Guru 1
-    5: Duration(days: 7),     // Guru 1 -> Guru 2 (CORRECTED: 1 week)
-    6: Duration(days: 14),    // Guru 2 -> Master (CORRECTED: 2 weeks)
-    7: Duration(days: 30),    // Master -> Enlightened (approx. 1 month)
-    8: Duration(days: 120),   // Enlightened -> Burned (approx. 4 months)
+  // Base intervals for each SRS stage (in hours)
+  static const Map<int, int> _baseSrsIntervals = {
+    1: 4,      // Apprentice 1
+    2: 8,      // Apprentice 2  
+    3: 24,     // Apprentice 3
+    4: 48,     // Apprentice 4
+    5: 168,    // Guru 1 (1 week)
+    6: 336,    // Guru 2 (2 weeks)
+    7: 720,    // Master (1 month)
+    8: 2880,   // Enlightened (4 months)
   };
 
-  /// Calculates the new SRS stage for an item after a review.
-  ///
-  /// [currentStage] is the stage of the item *before* the review (from 1 to 8).
-  /// [wasCorrect] is true if the user's answer was correct.
-  int getNewStage({required int currentStage, required bool wasCorrect}) {
+  /// Enhanced stage calculation with streak bonuses
+  int getNewStage({
+    required int currentStage, 
+    required bool wasCorrect,
+    int correctStreak = 0,
+  }) {
     if (wasCorrect) {
-      // On a correct answer, the item promotes to the next stage.
-      // We use min(9, ...) to ensure the stage caps at 9 (Burned).
-      return min(9, currentStage + 1);
+      // Bonus progression for streaks
+      int progression = 1;
+      if (correctStreak >= 5) progression = 2;
+      
+      return min(9, currentStage + progression);
     } else {
-      // On an incorrect answer, the item is demoted.
-      // The penalty is harsher for higher-level items.
-      if (currentStage <= 4) { // Apprentice stages
-        // Demote by one level.
+      // Adaptive demotion based on stage and streak
+      if (currentStage <= 4) {
         return max(1, currentStage - 1);
-      } else { // Guru, Master, Enlightened stages
-        // Demote by two levels.
-        return max(1, currentStage - 2);
+      } else {
+        int demotion = correctStreak >= 3 ? 1 : 2;
+        return max(1, currentStage - demotion);
       }
     }
   }
 
-  /// Calculates the next review date for an item.
-  ///
-  /// This method uses getNewStage() to first determine the item's new stage.
-  DateTime calculateNextReviewDate({required int currentStage, required bool wasCorrect}) {
-    final newStage = getNewStage(currentStage: currentStage, wasCorrect: wasCorrect);
-
-    if (newStage >= 9) {
-      // Stage 9 is "Burned", meaning it's considered learned.
-      // There is no next review, so we set a date far in the future.
-      return DateTime.now().add(const Duration(days: 365 * 100)); // 100 years
+  /// Calculate difficulty multiplier based on performance
+  double calculateDifficultyMultiplier({
+    required int totalReviews,
+    required int correctReviews,
+    required double currentMultiplier,
+  }) {
+    if (totalReviews < 3) return currentMultiplier;
+    
+    double accuracy = correctReviews / totalReviews;
+    
+    if (accuracy >= 0.9) {
+      return min(2.0, currentMultiplier * 1.1);
+    } else if (accuracy <= 0.6) {
+      return max(0.5, currentMultiplier * 0.9);
     }
-
-    // The new review date is the current time plus the interval for the new stage.
-    // The '!' is a null-check assertion, which is safe here because our map covers all stages from 1-8.
-    final interval = _srsIntervals[newStage]!;
-    return DateTime.now().add(interval);
+    
+    return currentMultiplier;
   }
 
-  /// RECOMMENDED METHOD: Processes a review and returns an updated UserProgress object.
-  ///
-  /// This is the best way to use the service. It takes the existing progress
-  /// and an answer's correctness, and returns a new UserProgress object with
-  /// the updated stage and review date. This works perfectly with our immutable models.
+  /// Enhanced next review date calculation
+  DateTime calculateNextReviewDate({
+    required int currentStage,
+    required bool wasCorrect,
+    required double difficultyMultiplier,
+    int correctStreak = 0,
+  }) {
+    final newStage = getNewStage(
+      currentStage: currentStage,
+      wasCorrect: wasCorrect,
+      correctStreak: correctStreak,
+    );
+
+    if (newStage >= 9) {
+      return DateTime.now().add(const Duration(days: 365 * 100));
+    }
+
+    int baseHours = _baseSrsIntervals[newStage]!;
+    
+    // Apply difficulty multiplier
+    double adjustedHours = baseHours * difficultyMultiplier;
+    
+    // Add some randomization to prevent bunching
+    double randomFactor = 0.8 + (Random().nextDouble() * 0.4); // 0.8 to 1.2
+    adjustedHours *= randomFactor;
+
+    return DateTime.now().add(Duration(hours: adjustedHours.round()));
+  }
+
+  /// Enhanced review processing
   UserProgress processReview({
     required UserProgress userProgress,
     required bool wasCorrect,
@@ -72,18 +95,35 @@ class SrsService {
     final newStage = getNewStage(
       currentStage: userProgress.srsStage,
       wasCorrect: wasCorrect,
+      correctStreak: userProgress.correctStreak,
+    );
+
+    final newCorrectStreak = wasCorrect 
+        ? userProgress.correctStreak + 1 
+        : 0;
+
+    final newDifficultyMultiplier = calculateDifficultyMultiplier(
+      totalReviews: userProgress.totalReviews + 1,
+      correctReviews: userProgress.correctReviews + (wasCorrect ? 1 : 0),
+      currentMultiplier: userProgress.difficultyMultiplier,
     );
 
     final newReviewDate = calculateNextReviewDate(
       currentStage: userProgress.srsStage,
       wasCorrect: wasCorrect,
+      difficultyMultiplier: newDifficultyMultiplier,
+      correctStreak: newCorrectStreak,
     );
 
-    // Use the .copyWith method generated by Freezed to create a new object
-    // with the updated values.
     return userProgress.copyWith(
       srsStage: newStage,
       nextReviewDate: newReviewDate,
+      correctStreak: newCorrectStreak,
+      totalReviews: userProgress.totalReviews + 1,
+      correctReviews: userProgress.correctReviews + (wasCorrect ? 1 : 0),
+      difficultyMultiplier: newDifficultyMultiplier,
+      lastReviewDate: DateTime.now(),
+      isLearned: newStage >= 9,
     );
   }
 }
