@@ -15,8 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserProfile {
 
- String get id; String get email; int get level; int get xp;// CORRECTED: Added the missing activeCourseId field
- String? get activeCourseId;
+ String get id; String get email; int get level; int get xp; String? get activeCourseId;
 /// Create a copy of UserProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -221,7 +220,6 @@ class _UserProfile implements UserProfile {
 @override final  String email;
 @override@JsonKey() final  int level;
 @override@JsonKey() final  int xp;
-// CORRECTED: Added the missing activeCourseId field
 @override final  String? activeCourseId;
 
 /// Create a copy of UserProfile

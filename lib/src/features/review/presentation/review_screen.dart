@@ -5,6 +5,7 @@ import 'package:leo_thap_tu_vung/src/features/review/presentation/question.dart'
 import 'package:leo_thap_tu_vung/src/features/review/presentation/review_controller.dart';
 import 'package:leo_thap_tu_vung/src/models/vocabulary_item.dart';
 import 'package:leo_thap_tu_vung/src/theme/app_theme.dart';
+import 'package:leo_thap_tu_vung/src/services/audio_service.dart';
 
 class ReviewScreen extends ConsumerWidget {
   const ReviewScreen({super.key});
@@ -160,7 +161,32 @@ class ReviewScreen extends ConsumerWidget {
                   ),
             ),
             const Divider(height: 16),
-            Text('Đáp án đúng: ${result.correctAnswer.word}'),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text.rich(
+                    TextSpan(
+                      text: 'Đáp án đúng: ',
+                      children: <TextSpan>[
+                        TextSpan(
+                          text: result.correctAnswer.word,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.volume_up),
+                  onPressed: () {
+                    // Use ref to read the provider
+                    final audioService = ref.read(audioServiceProvider);
+                    audioService.playAudioFromUrl(result.correctAnswer.pronunciationAudioUrl);
+                  },
+                ),
+              ],
+            ),
             const SizedBox(height: 8),
             Text('Loại từ: ${result.correctAnswer.wordType.name}'),
             const SizedBox(height: 8),

@@ -7,7 +7,7 @@
     "englishDefinition": "A greeting used when meeting someone.",
     "ipaPhonetic": "/həˈloʊ/",
     "exampleSentence": "She said hello to the new student.",
-    "pronunciationAudioUrl": "gs://your-bucket-name/audio/hello.mp3",
+    "pronunciationAudioUrl": "gs://leothaptuvung.firebasestorage.app/pronunciation_en_hello.mp3",
     "synonyms": ["hi", "greetings"],
     "pictureUrl": null
   },

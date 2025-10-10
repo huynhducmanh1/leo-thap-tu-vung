@@ -16,10 +16,9 @@ _VocabularyItem _$VocabularyItemFromJson(Map<String, dynamic> json) =>
       ipaPhonetic: json['ipaPhonetic'] as String,
       exampleSentence: json['exampleSentence'] as String,
       pronunciationAudioUrl: json['pronunciationAudioUrl'] as String,
-      synonyms:
-          (json['synonyms'] as List<dynamic>?)
-              ?.map((e) => e as String)
-              .toList(),
+      synonyms: (json['synonyms'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       pictureUrl: json['pictureUrl'] as String?,
     );
 

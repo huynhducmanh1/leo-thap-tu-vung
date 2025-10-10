@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:leo_thap_tu_vung/src/features/lesson/presentation/lesson_controller.dart';
 import 'package:leo_thap_tu_vung/src/models/vocabulary_item.dart';
 import 'package:leo_thap_tu_vung/src/models/word_type.dart';
+import 'package:leo_thap_tu_vung/src/services/audio_service.dart';
 
 class LessonScreen extends ConsumerWidget {
   const LessonScreen({super.key});
@@ -82,15 +83,15 @@ class LessonScreen extends ConsumerWidget {
 }
 
 // A widget for displaying a single vocabulary flashcard
-class LessonCard extends StatefulWidget {
+class LessonCard extends ConsumerStatefulWidget {
   const LessonCard({super.key, required this.word});
   final VocabularyItem word;
 
   @override
-  State<LessonCard> createState() => _LessonCardState();
+  ConsumerState<LessonCard> createState() => _LessonCardState();
 }
 
-class _LessonCardState extends State<LessonCard> {
+class _LessonCardState extends ConsumerState<LessonCard> {
   bool _showEnglishDefinition = false;
 
   @override
@@ -104,7 +105,19 @@ class _LessonCardState extends State<LessonCard> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // English Word
-              Text(widget.word.word, style: textTheme.displayLarge),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(widget.word.word, style: textTheme.displayLarge),
+                  IconButton(
+                    icon: const Icon(Icons.volume_up, size: 32),
+                    onPressed: () {
+                      final audioService = ref.read(audioServiceProvider);
+                      audioService.playAudioFromUrl(widget.word.pronunciationAudioUrl);
+                    },
+                  ),
+                ],
+              ),
               const SizedBox(height: 8),
               // Word Type and Phonetic
               Text(
