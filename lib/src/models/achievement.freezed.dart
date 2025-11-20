@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Achievement {
 
- String get id; String get title; String get description; AchievementType get type; int get requiredValue; bool get isUnlocked;
+ String get id; String get title; String get description; AchievementType get type; int get requiredValue; bool get isUnlocked;// NEW FIELDS needed by your Service
+ String? get iconName; DateTime? get unlockedAt;
 /// Create a copy of Achievement
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $AchievementCopyWith<Achievement> get copyWith => _$AchievementCopyWithImpl<Achi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Achievement&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.type, type) || other.type == type)&&(identical(other.requiredValue, requiredValue) || other.requiredValue == requiredValue)&&(identical(other.isUnlocked, isUnlocked) || other.isUnlocked == isUnlocked));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Achievement&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.type, type) || other.type == type)&&(identical(other.requiredValue, requiredValue) || other.requiredValue == requiredValue)&&(identical(other.isUnlocked, isUnlocked) || other.isUnlocked == isUnlocked)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.unlockedAt, unlockedAt) || other.unlockedAt == unlockedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,type,requiredValue,isUnlocked);
+int get hashCode => Object.hash(runtimeType,id,title,description,type,requiredValue,isUnlocked,iconName,unlockedAt);
 
 @override
 String toString() {
-  return 'Achievement(id: $id, title: $title, description: $description, type: $type, requiredValue: $requiredValue, isUnlocked: $isUnlocked)';
+  return 'Achievement(id: $id, title: $title, description: $description, type: $type, requiredValue: $requiredValue, isUnlocked: $isUnlocked, iconName: $iconName, unlockedAt: $unlockedAt)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $AchievementCopyWith<$Res>  {
   factory $AchievementCopyWith(Achievement value, $Res Function(Achievement) _then) = _$AchievementCopyWithImpl;
 @useResult
 $Res call({
- String id, String title, String description, AchievementType type, int requiredValue, bool isUnlocked
+ String id, String title, String description, AchievementType type, int requiredValue, bool isUnlocked, String? iconName, DateTime? unlockedAt
 });
 
 
@@ -65,7 +66,7 @@ class _$AchievementCopyWithImpl<$Res>
 
 /// Create a copy of Achievement
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = null,Object? type = null,Object? requiredValue = null,Object? isUnlocked = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = null,Object? type = null,Object? requiredValue = null,Object? isUnlocked = null,Object? iconName = freezed,Object? unlockedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -73,7 +74,9 @@ as String,description: null == description ? _self.description : description // 
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as AchievementType,requiredValue: null == requiredValue ? _self.requiredValue : requiredValue // ignore: cast_nullable_to_non_nullable
 as int,isUnlocked: null == isUnlocked ? _self.isUnlocked : isUnlocked // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,iconName: freezed == iconName ? _self.iconName : iconName // ignore: cast_nullable_to_non_nullable
+as String?,unlockedAt: freezed == unlockedAt ? _self.unlockedAt : unlockedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -158,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description,  AchievementType type,  int requiredValue,  bool isUnlocked)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String title,  String description,  AchievementType type,  int requiredValue,  bool isUnlocked,  String? iconName,  DateTime? unlockedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Achievement() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.type,_that.requiredValue,_that.isUnlocked);case _:
+return $default(_that.id,_that.title,_that.description,_that.type,_that.requiredValue,_that.isUnlocked,_that.iconName,_that.unlockedAt);case _:
   return orElse();
 
 }
@@ -179,10 +182,10 @@ return $default(_that.id,_that.title,_that.description,_that.type,_that.required
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description,  AchievementType type,  int requiredValue,  bool isUnlocked)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String title,  String description,  AchievementType type,  int requiredValue,  bool isUnlocked,  String? iconName,  DateTime? unlockedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Achievement():
-return $default(_that.id,_that.title,_that.description,_that.type,_that.requiredValue,_that.isUnlocked);case _:
+return $default(_that.id,_that.title,_that.description,_that.type,_that.requiredValue,_that.isUnlocked,_that.iconName,_that.unlockedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +202,10 @@ return $default(_that.id,_that.title,_that.description,_that.type,_that.required
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description,  AchievementType type,  int requiredValue,  bool isUnlocked)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String title,  String description,  AchievementType type,  int requiredValue,  bool isUnlocked,  String? iconName,  DateTime? unlockedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Achievement() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.type,_that.requiredValue,_that.isUnlocked);case _:
+return $default(_that.id,_that.title,_that.description,_that.type,_that.requiredValue,_that.isUnlocked,_that.iconName,_that.unlockedAt);case _:
   return null;
 
 }
@@ -214,7 +217,7 @@ return $default(_that.id,_that.title,_that.description,_that.type,_that.required
 @JsonSerializable()
 
 class _Achievement implements Achievement {
-  const _Achievement({required this.id, required this.title, required this.description, required this.type, required this.requiredValue, this.isUnlocked = false});
+  const _Achievement({required this.id, required this.title, required this.description, required this.type, required this.requiredValue, this.isUnlocked = false, this.iconName, this.unlockedAt});
   factory _Achievement.fromJson(Map<String, dynamic> json) => _$AchievementFromJson(json);
 
 @override final  String id;
@@ -223,6 +226,9 @@ class _Achievement implements Achievement {
 @override final  AchievementType type;
 @override final  int requiredValue;
 @override@JsonKey() final  bool isUnlocked;
+// NEW FIELDS needed by your Service
+@override final  String? iconName;
+@override final  DateTime? unlockedAt;
 
 /// Create a copy of Achievement
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Achievement&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.type, type) || other.type == type)&&(identical(other.requiredValue, requiredValue) || other.requiredValue == requiredValue)&&(identical(other.isUnlocked, isUnlocked) || other.isUnlocked == isUnlocked));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Achievement&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.type, type) || other.type == type)&&(identical(other.requiredValue, requiredValue) || other.requiredValue == requiredValue)&&(identical(other.isUnlocked, isUnlocked) || other.isUnlocked == isUnlocked)&&(identical(other.iconName, iconName) || other.iconName == iconName)&&(identical(other.unlockedAt, unlockedAt) || other.unlockedAt == unlockedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,title,description,type,requiredValue,isUnlocked);
+int get hashCode => Object.hash(runtimeType,id,title,description,type,requiredValue,isUnlocked,iconName,unlockedAt);
 
 @override
 String toString() {
-  return 'Achievement(id: $id, title: $title, description: $description, type: $type, requiredValue: $requiredValue, isUnlocked: $isUnlocked)';
+  return 'Achievement(id: $id, title: $title, description: $description, type: $type, requiredValue: $requiredValue, isUnlocked: $isUnlocked, iconName: $iconName, unlockedAt: $unlockedAt)';
 }
 
 
@@ -257,7 +263,7 @@ abstract mixin class _$AchievementCopyWith<$Res> implements $AchievementCopyWith
   factory _$AchievementCopyWith(_Achievement value, $Res Function(_Achievement) _then) = __$AchievementCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String title, String description, AchievementType type, int requiredValue, bool isUnlocked
+ String id, String title, String description, AchievementType type, int requiredValue, bool isUnlocked, String? iconName, DateTime? unlockedAt
 });
 
 
@@ -274,7 +280,7 @@ class __$AchievementCopyWithImpl<$Res>
 
 /// Create a copy of Achievement
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = null,Object? type = null,Object? requiredValue = null,Object? isUnlocked = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = null,Object? type = null,Object? requiredValue = null,Object? isUnlocked = null,Object? iconName = freezed,Object? unlockedAt = freezed,}) {
   return _then(_Achievement(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -282,7 +288,9 @@ as String,description: null == description ? _self.description : description // 
 as String,type: null == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as AchievementType,requiredValue: null == requiredValue ? _self.requiredValue : requiredValue // ignore: cast_nullable_to_non_nullable
 as int,isUnlocked: null == isUnlocked ? _self.isUnlocked : isUnlocked // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,iconName: freezed == iconName ? _self.iconName : iconName // ignore: cast_nullable_to_non_nullable
+as String?,unlockedAt: freezed == unlockedAt ? _self.unlockedAt : unlockedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

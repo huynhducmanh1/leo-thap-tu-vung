@@ -1,6 +1,3 @@
-import 'dart:math';
-
-import 'package:collection/collection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:leo_thap_tu_vung/src/features/auth/presentation/auth_providers.dart';
@@ -8,8 +5,11 @@ import 'package:leo_thap_tu_vung/src/features/review/presentation/question.dart'
 import 'package:leo_thap_tu_vung/src/features/vocabulary/data/database_providers.dart';
 import 'package:leo_thap_tu_vung/src/features/vocabulary/data/database_repository.dart';
 import 'package:leo_thap_tu_vung/src/features/vocabulary/data/vocabulary_repository.dart';
+import 'package:leo_thap_tu_vung/src/models/achievement.dart';
+import 'package:leo_thap_tu_vung/src/models/user_profile.dart';
 import 'package:leo_thap_tu_vung/src/models/user_progress.dart';
 import 'package:leo_thap_tu_vung/src/models/vocabulary_item.dart';
+import 'package:leo_thap_tu_vung/src/services/achievement_service.dart';
 import 'package:leo_thap_tu_vung/src/services/srs_service.dart';
 
 part 'review_controller.freezed.dart';
@@ -19,14 +19,16 @@ class AnswerResult {
     required this.wasCorrect,
     required this.correctAnswer,
     required this.updatedProgress,
+    this.newAchievements = const [],
   });
   final bool wasCorrect;
   final VocabularyItem correctAnswer;
   final UserProgress updatedProgress;
+  final List<Achievement> newAchievements;
 }
 
 @freezed
-abstract class ReviewState with _$ReviewState {
+class ReviewState with _$ReviewState {
   const factory ReviewState({
     @Default(true) bool isLoading,
     String? errorMessage,
@@ -34,6 +36,7 @@ abstract class ReviewState with _$ReviewState {
     @Default(0) int currentIndex,
     Question? currentQuestion,
     AnswerResult? lastAnswerResult,
+    UserProfile? currentUserProfile, // Needed to track streak locally
   }) = _ReviewState;
 }
 
@@ -44,7 +47,7 @@ class ReviewController extends StateNotifier<ReviewState> {
     this._srsService,
     this._userId,
   ) : super(const ReviewState()) {
-    _fetchAndGenerateFirstQuestion();
+    _init();
   }
 
   final DatabaseRepository _databaseRepository;
@@ -52,102 +55,162 @@ class ReviewController extends StateNotifier<ReviewState> {
   final SrsService _srsService;
   final String? _userId;
 
-  Future<void> _fetchAndGenerateFirstQuestion() async {
+  Future<void> _init() async {
     if (_userId == null) {
       state = state.copyWith(isLoading: false);
       return;
     }
     try {
+      // Fetch Queue
       final progressList = await _databaseRepository.getReviewQueue(userId: _userId!);
-      state = state.copyWith(reviewQueue: progressList);
+      
+      // Listen to Profile for Streak/Achievement calculations
+      _databaseRepository.watchUserProfile(userId: _userId!).listen((profile) {
+         if (mounted) state = state.copyWith(currentUserProfile: profile);
+      });
 
+      state = state.copyWith(reviewQueue: progressList);
+      
       if (state.reviewQueue.isNotEmpty) {
         await _generateQuestionForCurrentIndex();
       } else {
         state = state.copyWith(isLoading: false);
       }
-
     } catch (e) {
       state = state.copyWith(errorMessage: e.toString(), isLoading: false);
     }
   }
 
   Future<void> _generateQuestionForCurrentIndex() async {
-    final progress = state.reviewQueue[state.currentIndex];
-    final allVocab = await _vocabularyRepository.getInitialVocabulary();
-    final word = allVocab.firstWhereOrNull((v) => v.id == progress.vocabularyId);
-
-    if (word == null) {
-      state = state.copyWith(errorMessage: "Vocabulary item not found!");
+    if (state.reviewQueue.isEmpty) return;
+    
+    final currentProgress = state.reviewQueue[state.currentIndex];
+    final vocabItem = await _vocabularyRepository.getVocabularyById(currentProgress.vocabularyId);
+    
+    if (vocabItem == null) {
+      // Skip if word not found
+      await nextItem();
       return;
     }
 
     Question question;
-    if (progress.srsStage <= 4) { // Apprentice
-      final distractors = allVocab.where((v) => v.id != word.id).toList();
-      distractors.shuffle();
-      final options = [word, ...distractors.take(3)];
-      options.shuffle();
-      question = Question.multipleChoice(correctWord: word, options: options);
-    } else { // Guru and above
-      question = Question.typing(wordToReview: word);
+    if (currentProgress.srsStage < 3) {
+      // Multiple choice for new words
+      final options = await _vocabularyRepository.getDistractors(vocabItem, 3);
+      question = Question.multipleChoice(correctWord: vocabItem, options: options);
+    } else {
+      // Typing for learned words
+      question = Question.typing(wordToReview: vocabItem);
     }
 
     state = state.copyWith(currentQuestion: question, isLoading: false);
   }
 
   Future<void> submitAnswer(dynamic userAnswer) async {
-    if (_userId == null) return;
+    if (_userId == null || state.currentUserProfile == null) return;
 
     final progress = state.reviewQueue[state.currentIndex];
     final question = state.currentQuestion!;
-
+    
     final bool isCorrect = question.when(
       multipleChoice: (correctWord, _) => (userAnswer as VocabularyItem).id == correctWord.id,
       typing: (wordToReview) => (userAnswer as String).trim().toLowerCase() == wordToReview.word.toLowerCase(),
     );
-
+    
+    // 1. SRS Logic
     final updatedProgress = _srsService.processReview(
       userProgress: progress,
       wasCorrect: isCorrect,
     );
 
-    await _databaseRepository.updateUserProgress(progress: updatedProgress, userId: _userId!);
+    // 2. Gamification Logic (Streak & Achievements)
+    final profile = state.currentUserProfile!;
+    final now = DateTime.now();
+    final lastStudy = profile.lastStudyDate;
+    
+    bool isNewDay = lastStudy == null || 
+                    lastStudy.day != now.day || 
+                    lastStudy.month != now.month || 
+                    lastStudy.year != now.year;
 
-    if (isCorrect) {
-      await _databaseRepository.incrementXpForUser(userId: _userId!, amount: 1);
+    int newStreak = profile.currentStreak;
+    if (isNewDay) {
+       // Check if streak continues (yesterday was study day) or resets
+       final yesterday = now.subtract(const Duration(days: 1));
+       final wasYesterday = lastStudy != null && 
+                            lastStudy.day == yesterday.day && 
+                            lastStudy.month == yesterday.month && 
+                            lastStudy.year == yesterday.year;
+       
+       if (wasYesterday) {
+         newStreak++;
+       } else if (lastStudy == null || !wasYesterday) {
+         newStreak = 1; // Reset or start
+       }
     }
 
-    state = state.copyWith(
-      lastAnswerResult: AnswerResult(
-        wasCorrect: isCorrect,
-        correctAnswer: question.map(
-          multipleChoice: (q) => q.correctWord,
-          typing: (q) => q.wordToReview,
-        ),
-        updatedProgress: updatedProgress,
-      ),
+    // Check for Achievements
+    // Create a temporary profile object with the 'potential' new stats to check against achievements
+    final simulatedProfile = profile.copyWith(
+       currentStreak: newStreak,
+       totalWordsLearned: profile.totalWordsLearned + (updatedProgress.isLearned && !progress.isLearned ? 1 : 0),
+       totalReviewsCompleted: profile.totalReviewsCompleted + 1,
     );
+
+    final newAchievements = AchievementService.checkForNewAchievements(
+      userProfile: simulatedProfile,
+      currentUnlockedIds: profile.unlockedAchievements,
+    );
+
+    try {
+      // 3. Save Everything
+      await _databaseRepository.updateUserProgress(progress: updatedProgress, userId: _userId!);
+      
+      await _databaseRepository.updateUserStats(
+        userId: _userId!,
+        wordsLearnedDelta: updatedProgress.isLearned && !progress.isLearned ? 1 : 0,
+        reviewsCompletedDelta: 1,
+        streakUpdated: isNewDay,
+        newStreak: newStreak,
+        newAchievements: newAchievements,
+      );
+
+      // 4. Update State
+      state = state.copyWith(
+        lastAnswerResult: AnswerResult(
+          wasCorrect: isCorrect,
+          correctAnswer: question.map(
+            multipleChoice: (q) => q.correctWord,
+            typing: (q) => q.wordToReview,
+          ),
+          updatedProgress: updatedProgress,
+          newAchievements: newAchievements,
+        ),
+      );
+    } catch (e) {
+      state = state.copyWith(errorMessage: e.toString());
+    }
   }
 
   Future<void> nextItem() async {
-    if (state.currentIndex < state.reviewQueue.length - 1) {
-      state = state.copyWith(
-        currentIndex: state.currentIndex + 1,
-        lastAnswerResult: null,
-        currentQuestion: null, // Set to null to show loading for next question
-      );
-      await _generateQuestionForCurrentIndex();
-    } else {
-      print("Review session complete!");
-      // This is where we will navigate to the summary screen
-      state = state.copyWith(lastAnswerResult: null, reviewQueue: []);
-    }
+     if (state.currentIndex < state.reviewQueue.length - 1) {
+       state = state.copyWith(
+         currentIndex: state.currentIndex + 1,
+         lastAnswerResult: null,
+         currentQuestion: null,
+         isLoading: true,
+       );
+       await _generateQuestionForCurrentIndex();
+     } else {
+       // End of review session
+       state = state.copyWith(reviewQueue: [], currentQuestion: null);
+     }
   }
 }
 
+// Providers
 final srsServiceProvider = Provider((ref) => SrsService());
-final vocabularyRepositoryProvider = Provider((ref) => VocabularyRepository());
+final vocabularyRepositoryProvider = Provider((ref) => VocabularyRepository()); // Ensure you have this class
 
 final reviewControllerProvider =
     StateNotifierProvider.autoDispose<ReviewController, ReviewState>((ref) {

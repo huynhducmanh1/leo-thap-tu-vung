@@ -5,9 +5,10 @@ part 'achievement.g.dart';
 
 enum AchievementType {
   streak,
-  wordsLearned,
-  level,
+  totalWords, // Changed from 'wordsLearned' to match your Service
+  levelReached,
   reviewsCompleted,
+  perfectDays,
 }
 
 @freezed
@@ -19,6 +20,9 @@ abstract class Achievement with _$Achievement {
     required AchievementType type,
     required int requiredValue,
     @Default(false) bool isUnlocked,
+    // NEW FIELDS needed by your Service
+    String? iconName, 
+    DateTime? unlockedAt,
   }) = _Achievement;
 
   factory Achievement.fromJson(Map<String, dynamic> json) =>
