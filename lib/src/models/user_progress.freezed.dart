@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserProgress {
 
- String get vocabularyId; int get srsStage;@TimestampConverter() DateTime get nextReviewDate;
+ String get vocabularyId; int get srsStage; DateTime get nextReviewDate;// --- NEW SRS FIELDS ---
+ int get correctStreak; int get totalReviews; int get correctReviews; double get difficultyMultiplier; DateTime? get lastReviewDate; bool get isLearned;
 /// Create a copy of UserProgress
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $UserProgressCopyWith<UserProgress> get copyWith => _$UserProgressCopyWithImpl<U
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProgress&&(identical(other.vocabularyId, vocabularyId) || other.vocabularyId == vocabularyId)&&(identical(other.srsStage, srsStage) || other.srsStage == srsStage)&&(identical(other.nextReviewDate, nextReviewDate) || other.nextReviewDate == nextReviewDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserProgress&&(identical(other.vocabularyId, vocabularyId) || other.vocabularyId == vocabularyId)&&(identical(other.srsStage, srsStage) || other.srsStage == srsStage)&&(identical(other.nextReviewDate, nextReviewDate) || other.nextReviewDate == nextReviewDate)&&(identical(other.correctStreak, correctStreak) || other.correctStreak == correctStreak)&&(identical(other.totalReviews, totalReviews) || other.totalReviews == totalReviews)&&(identical(other.correctReviews, correctReviews) || other.correctReviews == correctReviews)&&(identical(other.difficultyMultiplier, difficultyMultiplier) || other.difficultyMultiplier == difficultyMultiplier)&&(identical(other.lastReviewDate, lastReviewDate) || other.lastReviewDate == lastReviewDate)&&(identical(other.isLearned, isLearned) || other.isLearned == isLearned));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,vocabularyId,srsStage,nextReviewDate);
+int get hashCode => Object.hash(runtimeType,vocabularyId,srsStage,nextReviewDate,correctStreak,totalReviews,correctReviews,difficultyMultiplier,lastReviewDate,isLearned);
 
 @override
 String toString() {
-  return 'UserProgress(vocabularyId: $vocabularyId, srsStage: $srsStage, nextReviewDate: $nextReviewDate)';
+  return 'UserProgress(vocabularyId: $vocabularyId, srsStage: $srsStage, nextReviewDate: $nextReviewDate, correctStreak: $correctStreak, totalReviews: $totalReviews, correctReviews: $correctReviews, difficultyMultiplier: $difficultyMultiplier, lastReviewDate: $lastReviewDate, isLearned: $isLearned)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $UserProgressCopyWith<$Res>  {
   factory $UserProgressCopyWith(UserProgress value, $Res Function(UserProgress) _then) = _$UserProgressCopyWithImpl;
 @useResult
 $Res call({
- String vocabularyId, int srsStage,@TimestampConverter() DateTime nextReviewDate
+ String vocabularyId, int srsStage, DateTime nextReviewDate, int correctStreak, int totalReviews, int correctReviews, double difficultyMultiplier, DateTime? lastReviewDate, bool isLearned
 });
 
 
@@ -65,12 +66,18 @@ class _$UserProgressCopyWithImpl<$Res>
 
 /// Create a copy of UserProgress
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? vocabularyId = null,Object? srsStage = null,Object? nextReviewDate = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? vocabularyId = null,Object? srsStage = null,Object? nextReviewDate = null,Object? correctStreak = null,Object? totalReviews = null,Object? correctReviews = null,Object? difficultyMultiplier = null,Object? lastReviewDate = freezed,Object? isLearned = null,}) {
   return _then(_self.copyWith(
 vocabularyId: null == vocabularyId ? _self.vocabularyId : vocabularyId // ignore: cast_nullable_to_non_nullable
 as String,srsStage: null == srsStage ? _self.srsStage : srsStage // ignore: cast_nullable_to_non_nullable
 as int,nextReviewDate: null == nextReviewDate ? _self.nextReviewDate : nextReviewDate // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,correctStreak: null == correctStreak ? _self.correctStreak : correctStreak // ignore: cast_nullable_to_non_nullable
+as int,totalReviews: null == totalReviews ? _self.totalReviews : totalReviews // ignore: cast_nullable_to_non_nullable
+as int,correctReviews: null == correctReviews ? _self.correctReviews : correctReviews // ignore: cast_nullable_to_non_nullable
+as int,difficultyMultiplier: null == difficultyMultiplier ? _self.difficultyMultiplier : difficultyMultiplier // ignore: cast_nullable_to_non_nullable
+as double,lastReviewDate: freezed == lastReviewDate ? _self.lastReviewDate : lastReviewDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,isLearned: null == isLearned ? _self.isLearned : isLearned // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -155,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String vocabularyId,  int srsStage, @TimestampConverter()  DateTime nextReviewDate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String vocabularyId,  int srsStage,  DateTime nextReviewDate,  int correctStreak,  int totalReviews,  int correctReviews,  double difficultyMultiplier,  DateTime? lastReviewDate,  bool isLearned)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserProgress() when $default != null:
-return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate);case _:
+return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate,_that.correctStreak,_that.totalReviews,_that.correctReviews,_that.difficultyMultiplier,_that.lastReviewDate,_that.isLearned);case _:
   return orElse();
 
 }
@@ -176,10 +183,10 @@ return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String vocabularyId,  int srsStage, @TimestampConverter()  DateTime nextReviewDate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String vocabularyId,  int srsStage,  DateTime nextReviewDate,  int correctStreak,  int totalReviews,  int correctReviews,  double difficultyMultiplier,  DateTime? lastReviewDate,  bool isLearned)  $default,) {final _that = this;
 switch (_that) {
 case _UserProgress():
-return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate);case _:
+return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate,_that.correctStreak,_that.totalReviews,_that.correctReviews,_that.difficultyMultiplier,_that.lastReviewDate,_that.isLearned);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +203,10 @@ return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String vocabularyId,  int srsStage, @TimestampConverter()  DateTime nextReviewDate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String vocabularyId,  int srsStage,  DateTime nextReviewDate,  int correctStreak,  int totalReviews,  int correctReviews,  double difficultyMultiplier,  DateTime? lastReviewDate,  bool isLearned)?  $default,) {final _that = this;
 switch (_that) {
 case _UserProgress() when $default != null:
-return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate);case _:
+return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate,_that.correctStreak,_that.totalReviews,_that.correctReviews,_that.difficultyMultiplier,_that.lastReviewDate,_that.isLearned);case _:
   return null;
 
 }
@@ -211,12 +218,19 @@ return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate);case _:
 @JsonSerializable()
 
 class _UserProgress implements UserProgress {
-  const _UserProgress({required this.vocabularyId, required this.srsStage, @TimestampConverter() required this.nextReviewDate});
+  const _UserProgress({required this.vocabularyId, required this.srsStage, required this.nextReviewDate, this.correctStreak = 0, this.totalReviews = 0, this.correctReviews = 0, this.difficultyMultiplier = 1.0, this.lastReviewDate, this.isLearned = false});
   factory _UserProgress.fromJson(Map<String, dynamic> json) => _$UserProgressFromJson(json);
 
 @override final  String vocabularyId;
 @override final  int srsStage;
-@override@TimestampConverter() final  DateTime nextReviewDate;
+@override final  DateTime nextReviewDate;
+// --- NEW SRS FIELDS ---
+@override@JsonKey() final  int correctStreak;
+@override@JsonKey() final  int totalReviews;
+@override@JsonKey() final  int correctReviews;
+@override@JsonKey() final  double difficultyMultiplier;
+@override final  DateTime? lastReviewDate;
+@override@JsonKey() final  bool isLearned;
 
 /// Create a copy of UserProgress
 /// with the given fields replaced by the non-null parameter values.
@@ -231,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProgress&&(identical(other.vocabularyId, vocabularyId) || other.vocabularyId == vocabularyId)&&(identical(other.srsStage, srsStage) || other.srsStage == srsStage)&&(identical(other.nextReviewDate, nextReviewDate) || other.nextReviewDate == nextReviewDate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _UserProgress&&(identical(other.vocabularyId, vocabularyId) || other.vocabularyId == vocabularyId)&&(identical(other.srsStage, srsStage) || other.srsStage == srsStage)&&(identical(other.nextReviewDate, nextReviewDate) || other.nextReviewDate == nextReviewDate)&&(identical(other.correctStreak, correctStreak) || other.correctStreak == correctStreak)&&(identical(other.totalReviews, totalReviews) || other.totalReviews == totalReviews)&&(identical(other.correctReviews, correctReviews) || other.correctReviews == correctReviews)&&(identical(other.difficultyMultiplier, difficultyMultiplier) || other.difficultyMultiplier == difficultyMultiplier)&&(identical(other.lastReviewDate, lastReviewDate) || other.lastReviewDate == lastReviewDate)&&(identical(other.isLearned, isLearned) || other.isLearned == isLearned));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,vocabularyId,srsStage,nextReviewDate);
+int get hashCode => Object.hash(runtimeType,vocabularyId,srsStage,nextReviewDate,correctStreak,totalReviews,correctReviews,difficultyMultiplier,lastReviewDate,isLearned);
 
 @override
 String toString() {
-  return 'UserProgress(vocabularyId: $vocabularyId, srsStage: $srsStage, nextReviewDate: $nextReviewDate)';
+  return 'UserProgress(vocabularyId: $vocabularyId, srsStage: $srsStage, nextReviewDate: $nextReviewDate, correctStreak: $correctStreak, totalReviews: $totalReviews, correctReviews: $correctReviews, difficultyMultiplier: $difficultyMultiplier, lastReviewDate: $lastReviewDate, isLearned: $isLearned)';
 }
 
 
@@ -251,7 +265,7 @@ abstract mixin class _$UserProgressCopyWith<$Res> implements $UserProgressCopyWi
   factory _$UserProgressCopyWith(_UserProgress value, $Res Function(_UserProgress) _then) = __$UserProgressCopyWithImpl;
 @override @useResult
 $Res call({
- String vocabularyId, int srsStage,@TimestampConverter() DateTime nextReviewDate
+ String vocabularyId, int srsStage, DateTime nextReviewDate, int correctStreak, int totalReviews, int correctReviews, double difficultyMultiplier, DateTime? lastReviewDate, bool isLearned
 });
 
 
@@ -268,12 +282,18 @@ class __$UserProgressCopyWithImpl<$Res>
 
 /// Create a copy of UserProgress
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? vocabularyId = null,Object? srsStage = null,Object? nextReviewDate = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? vocabularyId = null,Object? srsStage = null,Object? nextReviewDate = null,Object? correctStreak = null,Object? totalReviews = null,Object? correctReviews = null,Object? difficultyMultiplier = null,Object? lastReviewDate = freezed,Object? isLearned = null,}) {
   return _then(_UserProgress(
 vocabularyId: null == vocabularyId ? _self.vocabularyId : vocabularyId // ignore: cast_nullable_to_non_nullable
 as String,srsStage: null == srsStage ? _self.srsStage : srsStage // ignore: cast_nullable_to_non_nullable
 as int,nextReviewDate: null == nextReviewDate ? _self.nextReviewDate : nextReviewDate // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as DateTime,correctStreak: null == correctStreak ? _self.correctStreak : correctStreak // ignore: cast_nullable_to_non_nullable
+as int,totalReviews: null == totalReviews ? _self.totalReviews : totalReviews // ignore: cast_nullable_to_non_nullable
+as int,correctReviews: null == correctReviews ? _self.correctReviews : correctReviews // ignore: cast_nullable_to_non_nullable
+as int,difficultyMultiplier: null == difficultyMultiplier ? _self.difficultyMultiplier : difficultyMultiplier // ignore: cast_nullable_to_non_nullable
+as double,lastReviewDate: freezed == lastReviewDate ? _self.lastReviewDate : lastReviewDate // ignore: cast_nullable_to_non_nullable
+as DateTime?,isLearned: null == isLearned ? _self.isLearned : isLearned // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 

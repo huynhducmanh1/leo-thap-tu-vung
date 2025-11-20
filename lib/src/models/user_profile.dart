@@ -11,6 +11,14 @@ abstract class UserProfile with _$UserProfile {
     @Default(1) int level,
     @Default(0) int xp,
     String? activeCourseId,
+    
+    // --- NEW GAMIFICATION FIELDS ---
+    @Default(0) int currentStreak,
+    @Default(0) int longestStreak,
+    @Default(0) int totalWordsLearned,
+    @Default(0) int totalReviewsCompleted,
+    DateTime? lastStudyDate,
+    @Default([]) List<String> unlockedAchievements, 
   }) = _UserProfile;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
