@@ -5,7 +5,7 @@ part 'achievement.g.dart';
 
 enum AchievementType {
   streak,
-  totalWords, // Changed from 'wordsLearned' to match your Service
+  totalWords,
   levelReached,
   reviewsCompleted,
   perfectDays,
@@ -20,8 +20,9 @@ abstract class Achievement with _$Achievement {
     required AchievementType type,
     required int requiredValue,
     @Default(false) bool isUnlocked,
-    // NEW FIELDS needed by your Service
-    String? iconName, 
+    
+    // --- NEW FIELDS ---
+    String? iconName,
     DateTime? unlockedAt,
   }) = _Achievement;
 

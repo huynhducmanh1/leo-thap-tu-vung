@@ -1,85 +1,68 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:leo_thap_tu_vung/src/features/auth/presentation/auth_providers.dart';
-import 'package:leo_thap_tu_vung/src/features/review/presentation/review_controller.dart';
-import 'package:leo_thap_tu_vung/src/features/vocabulary/data/database_providers.dart';
-import 'package:leo_thap_tu_vung/src/features/vocabulary/data/database_repository.dart';
-import 'package:leo_thap_tu_vung/src/features/vocabulary/data/vocabulary_repository.dart';
-import 'package:leo_thap_tu_vung/src/models/user_progress.dart';
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:flutter/services.dart';
 import 'package:leo_thap_tu_vung/src/models/vocabulary_item.dart';
 
-part 'lesson_controller.freezed.dart';
+class VocabularyRepository {
+  List<VocabularyItem> _vocabulary = [];
 
-@freezed
-abstract class LessonState with _$LessonState {
-  const factory LessonState({
-    @Default([]) List<VocabularyItem> words,
-    @Default(0) int currentIndex,
-    @Default(true) bool isLoading,
-    String? errorMessage,
-  }) = _LessonState;
-}
-
-class LessonController extends StateNotifier<LessonState> {
-  // The controller now needs more information to do its job
-  LessonController(
-    this._vocabularyRepository,
-    this._databaseRepository,
-    this._userId,
-    this._ref, // We pass in the ref to invalidate other providers
-  ) : super(const LessonState()) {
-    _fetchLessons();
-  }
-
-  final VocabularyRepository _vocabularyRepository;
-  final DatabaseRepository _databaseRepository;
-  final String? _userId;
-  final Ref _ref;
-
-  Future<void> _fetchLessons() async {
-    // In the future, this will be much smarter, fetching words the user hasn't seen.
-    // For now, we fetch the first 5 words from our test JSON.
+  /// Loads the vocabulary list from the JSON asset.
+  Future<void> loadVocabulary() async {
+    if (_vocabulary.isNotEmpty) return;
+    
     try {
-      final allWords = await _vocabularyRepository.getInitialVocabulary();
-      final lessonWords = allWords.take(5).toList();
-      state = state.copyWith(words: lessonWords, isLoading: false);
+      final jsonString = await rootBundle.loadString('assets/data/initial_vocabulary.json');
+      final List<dynamic> jsonList = json.decode(jsonString);
+      _vocabulary = jsonList.map((json) => VocabularyItem.fromJson(json)).toList();
     } catch (e) {
-      state = state.copyWith(errorMessage: e.toString(), isLoading: false);
+      print("Error loading vocabulary: $e");
+      _vocabulary = []; 
     }
   }
 
-  void nextWord() {
-    if (state.currentIndex < state.words.length - 1) {
-      state = state.copyWith(currentIndex: state.currentIndex + 1);
+  Future<List<VocabularyItem>> getAllVocabulary() async {
+    await loadVocabulary();
+    return _vocabulary;
+  }
+
+  // FIX: Added this method to satisfy LessonController
+  Future<List<VocabularyItem>> getInitialVocabulary() async {
+    return getAllVocabulary();
+  }
+
+  Future<VocabularyItem?> getVocabularyById(String id) async {
+    await loadVocabulary();
+    try {
+      return _vocabulary.firstWhere((item) => item.id == id);
+    } catch (e) {
+      return null;
     }
   }
 
-  // This is the new method to save progress
-  Future<void> completeLessonSession() async {
-    if (_userId == null) return; // Can't save progress if not logged in
-
-    for (final word in state.words) {
-      final progress = UserProgress(
-        vocabularyId: word.id,
-        srsStage: 1, // Start at Apprentice 1
-        nextReviewDate: DateTime.now(), // Make it available for review now
-      );
-      await _databaseRepository.updateUserProgress(progress: progress, userId: _userId!);
+  Future<List<VocabularyItem>> getDistractors(VocabularyItem correctWord, int count) async {
+    await loadVocabulary();
+    
+    if (_vocabulary.length <= count) {
+      return _vocabulary.where((w) => w.id != correctWord.id).toList();
     }
 
-    // Invalidate the review controller so the HomeScreen count updates
-    _ref.invalidate(reviewControllerProvider);
-    print("Lesson session completed and progress saved for ${state.words.length} words.");
+    final random = Random();
+    final distractors = <VocabularyItem>{};
+
+    while (distractors.length < count) {
+      final randomIndex = random.nextInt(_vocabulary.length);
+      final word = _vocabulary[randomIndex];
+      
+      if (word.id != correctWord.id) {
+        distractors.add(word);
+      }
+    }
+
+    final options = distractors.toList();
+    options.add(correctWord);
+    options.shuffle();
+    
+    return options;
   }
 }
-
-final vocabularyRepositoryProvider = Provider((ref) => VocabularyRepository());
-
-final lessonControllerProvider =
-    StateNotifierProvider.autoDispose<LessonController, LessonState>((ref) {
-  final vocabRepo = ref.watch(vocabularyRepositoryProvider);
-  final dbRepo = ref.watch(databaseRepositoryProvider);
-  final userId = ref.watch(authStateChangesProvider).value?.uid;
-  // We pass the ref itself so the controller can invalidate other providers
-  return LessonController(vocabRepo, dbRepo, userId, ref);
-});

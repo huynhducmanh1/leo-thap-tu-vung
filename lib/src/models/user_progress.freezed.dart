@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$UserProgress {
 
- String get vocabularyId; int get srsStage; DateTime get nextReviewDate;// --- NEW SRS FIELDS ---
+ String get vocabularyId; int get srsStage;@TimestampConverter() DateTime get nextReviewDate;// --- NEW FIELDS REQUIRED FOR REVIEW CONTROLLER ---
  int get correctStreak; int get totalReviews; int get correctReviews; double get difficultyMultiplier; DateTime? get lastReviewDate; bool get isLearned;
 /// Create a copy of UserProgress
 /// with the given fields replaced by the non-null parameter values.
@@ -49,7 +49,7 @@ abstract mixin class $UserProgressCopyWith<$Res>  {
   factory $UserProgressCopyWith(UserProgress value, $Res Function(UserProgress) _then) = _$UserProgressCopyWithImpl;
 @useResult
 $Res call({
- String vocabularyId, int srsStage, DateTime nextReviewDate, int correctStreak, int totalReviews, int correctReviews, double difficultyMultiplier, DateTime? lastReviewDate, bool isLearned
+ String vocabularyId, int srsStage,@TimestampConverter() DateTime nextReviewDate, int correctStreak, int totalReviews, int correctReviews, double difficultyMultiplier, DateTime? lastReviewDate, bool isLearned
 });
 
 
@@ -162,7 +162,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String vocabularyId,  int srsStage,  DateTime nextReviewDate,  int correctStreak,  int totalReviews,  int correctReviews,  double difficultyMultiplier,  DateTime? lastReviewDate,  bool isLearned)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String vocabularyId,  int srsStage, @TimestampConverter()  DateTime nextReviewDate,  int correctStreak,  int totalReviews,  int correctReviews,  double difficultyMultiplier,  DateTime? lastReviewDate,  bool isLearned)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _UserProgress() when $default != null:
 return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate,_that.correctStreak,_that.totalReviews,_that.correctReviews,_that.difficultyMultiplier,_that.lastReviewDate,_that.isLearned);case _:
@@ -183,7 +183,7 @@ return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate,_that.cor
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String vocabularyId,  int srsStage,  DateTime nextReviewDate,  int correctStreak,  int totalReviews,  int correctReviews,  double difficultyMultiplier,  DateTime? lastReviewDate,  bool isLearned)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String vocabularyId,  int srsStage, @TimestampConverter()  DateTime nextReviewDate,  int correctStreak,  int totalReviews,  int correctReviews,  double difficultyMultiplier,  DateTime? lastReviewDate,  bool isLearned)  $default,) {final _that = this;
 switch (_that) {
 case _UserProgress():
 return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate,_that.correctStreak,_that.totalReviews,_that.correctReviews,_that.difficultyMultiplier,_that.lastReviewDate,_that.isLearned);case _:
@@ -203,7 +203,7 @@ return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate,_that.cor
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String vocabularyId,  int srsStage,  DateTime nextReviewDate,  int correctStreak,  int totalReviews,  int correctReviews,  double difficultyMultiplier,  DateTime? lastReviewDate,  bool isLearned)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String vocabularyId,  int srsStage, @TimestampConverter()  DateTime nextReviewDate,  int correctStreak,  int totalReviews,  int correctReviews,  double difficultyMultiplier,  DateTime? lastReviewDate,  bool isLearned)?  $default,) {final _that = this;
 switch (_that) {
 case _UserProgress() when $default != null:
 return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate,_that.correctStreak,_that.totalReviews,_that.correctReviews,_that.difficultyMultiplier,_that.lastReviewDate,_that.isLearned);case _:
@@ -218,13 +218,13 @@ return $default(_that.vocabularyId,_that.srsStage,_that.nextReviewDate,_that.cor
 @JsonSerializable()
 
 class _UserProgress implements UserProgress {
-  const _UserProgress({required this.vocabularyId, required this.srsStage, required this.nextReviewDate, this.correctStreak = 0, this.totalReviews = 0, this.correctReviews = 0, this.difficultyMultiplier = 1.0, this.lastReviewDate, this.isLearned = false});
+  const _UserProgress({required this.vocabularyId, required this.srsStage, @TimestampConverter() required this.nextReviewDate, this.correctStreak = 0, this.totalReviews = 0, this.correctReviews = 0, this.difficultyMultiplier = 1.0, this.lastReviewDate, this.isLearned = false});
   factory _UserProgress.fromJson(Map<String, dynamic> json) => _$UserProgressFromJson(json);
 
 @override final  String vocabularyId;
 @override final  int srsStage;
-@override final  DateTime nextReviewDate;
-// --- NEW SRS FIELDS ---
+@override@TimestampConverter() final  DateTime nextReviewDate;
+// --- NEW FIELDS REQUIRED FOR REVIEW CONTROLLER ---
 @override@JsonKey() final  int correctStreak;
 @override@JsonKey() final  int totalReviews;
 @override@JsonKey() final  int correctReviews;
@@ -265,7 +265,7 @@ abstract mixin class _$UserProgressCopyWith<$Res> implements $UserProgressCopyWi
   factory _$UserProgressCopyWith(_UserProgress value, $Res Function(_UserProgress) _then) = __$UserProgressCopyWithImpl;
 @override @useResult
 $Res call({
- String vocabularyId, int srsStage, DateTime nextReviewDate, int correctStreak, int totalReviews, int correctReviews, double difficultyMultiplier, DateTime? lastReviewDate, bool isLearned
+ String vocabularyId, int srsStage,@TimestampConverter() DateTime nextReviewDate, int correctStreak, int totalReviews, int correctReviews, double difficultyMultiplier, DateTime? lastReviewDate, bool isLearned
 });
 
 

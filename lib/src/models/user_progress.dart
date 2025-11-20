@@ -1,16 +1,25 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'user_progress.freezed.dart';
 part 'user_progress.g.dart';
+
+class TimestampConverter implements JsonConverter<DateTime, Timestamp> {
+  const TimestampConverter();
+  @override
+  DateTime fromJson(Timestamp timestamp) => timestamp.toDate();
+  @override
+  Timestamp toJson(DateTime date) => Timestamp.fromDate(date);
+}
 
 @freezed
 abstract class UserProgress with _$UserProgress {
   const factory UserProgress({
     required String vocabularyId,
     required int srsStage,
-    required DateTime nextReviewDate,
+    @TimestampConverter() required DateTime nextReviewDate,
     
-    // --- NEW SRS FIELDS ---
+    // --- NEW FIELDS REQUIRED FOR REVIEW CONTROLLER ---
     @Default(0) int correctStreak,
     @Default(0) int totalReviews,
     @Default(0) int correctReviews,

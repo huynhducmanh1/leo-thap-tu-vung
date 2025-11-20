@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Achievement {
 
- String get id; String get title; String get description; AchievementType get type; int get requiredValue; bool get isUnlocked;// NEW FIELDS needed by your Service
+ String get id; String get title; String get description; AchievementType get type; int get requiredValue; bool get isUnlocked;// --- NEW FIELDS ---
  String? get iconName; DateTime? get unlockedAt;
 /// Create a copy of Achievement
 /// with the given fields replaced by the non-null parameter values.
@@ -226,7 +226,7 @@ class _Achievement implements Achievement {
 @override final  AchievementType type;
 @override final  int requiredValue;
 @override@JsonKey() final  bool isUnlocked;
-// NEW FIELDS needed by your Service
+// --- NEW FIELDS ---
 @override final  String? iconName;
 @override final  DateTime? unlockedAt;
 

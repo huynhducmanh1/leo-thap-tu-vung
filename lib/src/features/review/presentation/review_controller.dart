@@ -5,7 +5,7 @@ import 'package:leo_thap_tu_vung/src/features/review/presentation/question.dart'
 import 'package:leo_thap_tu_vung/src/features/vocabulary/data/database_providers.dart';
 import 'package:leo_thap_tu_vung/src/features/vocabulary/data/database_repository.dart';
 import 'package:leo_thap_tu_vung/src/features/vocabulary/data/vocabulary_repository.dart';
-import 'package:leo_thap_tu_vung/src/models/achievement.dart';
+import 'package:leo_thap_tu_vung/src/models/achievement.dart'; // Ensure this is here
 import 'package:leo_thap_tu_vung/src/models/user_profile.dart';
 import 'package:leo_thap_tu_vung/src/models/user_progress.dart';
 import 'package:leo_thap_tu_vung/src/models/vocabulary_item.dart';
@@ -36,7 +36,7 @@ class ReviewState with _$ReviewState {
     @Default(0) int currentIndex,
     Question? currentQuestion,
     AnswerResult? lastAnswerResult,
-    UserProfile? currentUserProfile, // Needed to track streak locally
+    UserProfile? currentUserProfile,
   }) = _ReviewState;
 }
 
@@ -61,7 +61,6 @@ class ReviewController extends StateNotifier<ReviewState> {
       return;
     }
     try {
-      // Fetch Queue
       final progressList = await _databaseRepository.getReviewQueue(userId: _userId!);
       
       // Listen to Profile for Streak/Achievement calculations
@@ -88,18 +87,15 @@ class ReviewController extends StateNotifier<ReviewState> {
     final vocabItem = await _vocabularyRepository.getVocabularyById(currentProgress.vocabularyId);
     
     if (vocabItem == null) {
-      // Skip if word not found
       await nextItem();
       return;
     }
 
     Question question;
     if (currentProgress.srsStage < 3) {
-      // Multiple choice for new words
       final options = await _vocabularyRepository.getDistractors(vocabItem, 3);
       question = Question.multipleChoice(correctWord: vocabItem, options: options);
     } else {
-      // Typing for learned words
       question = Question.typing(wordToReview: vocabItem);
     }
 
@@ -117,13 +113,12 @@ class ReviewController extends StateNotifier<ReviewState> {
       typing: (wordToReview) => (userAnswer as String).trim().toLowerCase() == wordToReview.word.toLowerCase(),
     );
     
-    // 1. SRS Logic
     final updatedProgress = _srsService.processReview(
       userProgress: progress,
       wasCorrect: isCorrect,
     );
 
-    // 2. Gamification Logic (Streak & Achievements)
+    // Streak Logic
     final profile = state.currentUserProfile!;
     final now = DateTime.now();
     final lastStudy = profile.lastStudyDate;
@@ -135,7 +130,6 @@ class ReviewController extends StateNotifier<ReviewState> {
 
     int newStreak = profile.currentStreak;
     if (isNewDay) {
-       // Check if streak continues (yesterday was study day) or resets
        final yesterday = now.subtract(const Duration(days: 1));
        final wasYesterday = lastStudy != null && 
                             lastStudy.day == yesterday.day && 
@@ -145,12 +139,11 @@ class ReviewController extends StateNotifier<ReviewState> {
        if (wasYesterday) {
          newStreak++;
        } else if (lastStudy == null || !wasYesterday) {
-         newStreak = 1; // Reset or start
+         newStreak = 1; 
        }
     }
 
-    // Check for Achievements
-    // Create a temporary profile object with the 'potential' new stats to check against achievements
+    // Achievement Check
     final simulatedProfile = profile.copyWith(
        currentStreak: newStreak,
        totalWordsLearned: profile.totalWordsLearned + (updatedProgress.isLearned && !progress.isLearned ? 1 : 0),
@@ -163,7 +156,6 @@ class ReviewController extends StateNotifier<ReviewState> {
     );
 
     try {
-      // 3. Save Everything
       await _databaseRepository.updateUserProgress(progress: updatedProgress, userId: _userId!);
       
       await _databaseRepository.updateUserStats(
@@ -175,7 +167,6 @@ class ReviewController extends StateNotifier<ReviewState> {
         newAchievements: newAchievements,
       );
 
-      // 4. Update State
       state = state.copyWith(
         lastAnswerResult: AnswerResult(
           wasCorrect: isCorrect,
@@ -202,15 +193,13 @@ class ReviewController extends StateNotifier<ReviewState> {
        );
        await _generateQuestionForCurrentIndex();
      } else {
-       // End of review session
        state = state.copyWith(reviewQueue: [], currentQuestion: null);
      }
   }
 }
 
-// Providers
 final srsServiceProvider = Provider((ref) => SrsService());
-final vocabularyRepositoryProvider = Provider((ref) => VocabularyRepository()); // Ensure you have this class
+final vocabularyRepositoryProvider = Provider((ref) => VocabularyRepository()); 
 
 final reviewControllerProvider =
     StateNotifierProvider.autoDispose<ReviewController, ReviewState>((ref) {

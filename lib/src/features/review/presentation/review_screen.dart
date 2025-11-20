@@ -3,9 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:leo_thap_tu_vung/src/features/review/presentation/question.dart';
 import 'package:leo_thap_tu_vung/src/features/review/presentation/review_controller.dart';
+import 'package:leo_thap_tu_vung/src/models/achievement.dart'; // Added Import
+import 'package:leo_thap_tu_vung/src/models/vocabulary_item.dart'; // Ensure this is here
 import 'package:leo_thap_tu_vung/src/services/audio_service.dart';
 import 'package:leo_thap_tu_vung/src/theme/app_theme.dart';
-// Ensure you import your Achievement model if you use it in UI
 
 class ReviewScreen extends ConsumerWidget {
   const ReviewScreen({super.key});
@@ -15,11 +16,9 @@ class ReviewScreen extends ConsumerWidget {
     final reviewState = ref.watch(reviewControllerProvider);
     final reviewController = ref.read(reviewControllerProvider.notifier);
 
-    // Listen for new achievements to show a dialog
     ref.listen(reviewControllerProvider, (previous, next) {
       final result = next.lastAnswerResult;
       if (result != null && result.newAchievements.isNotEmpty) {
-        // Show the first new achievement
         final achievement = result.newAchievements.first;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -95,34 +94,80 @@ class ReviewScreen extends ConsumerWidget {
       ),
     );
   }
-  
-  // ... keep your existing _buildQuestionArea, _buildMultipleChoiceUI, _buildTypingUI ...
-  
+
   Widget _buildQuestionArea(BuildContext context, WidgetRef ref, ReviewState reviewState) {
-      final question = reviewState.currentQuestion!;
-      
-      if (reviewState.lastAnswerResult != null) {
-        return _buildFeedbackCard(context, ref, reviewState.lastAnswerResult!);
-      }
-
-      return question.when(
-        multipleChoice: (correctWord, options) =>
-            _buildMultipleChoiceUI(context, ref, correctWord, options),
-        typing: (wordToReview) => _buildTypingUI(context, ref, wordToReview),
-      );
+    final question = reviewState.currentQuestion!;
+    
+    if (reviewState.lastAnswerResult != null) {
+      return _buildFeedbackCard(context, ref, reviewState.lastAnswerResult!);
     }
 
-    // ... Ensure these methods exist (copy from your previous file) ...
-    Widget _buildMultipleChoiceUI(BuildContext context, WidgetRef ref, dynamic correctWord, dynamic options) {
-       // ... implementation ...
-       return Container(); // Placeholder
-    }
-    Widget _buildTypingUI(BuildContext context, WidgetRef ref, dynamic wordToReview) {
-       // ... implementation ...
-       return Container(); // Placeholder
-    }
+    return question.when(
+      multipleChoice: (correctWord, options) =>
+          _buildMultipleChoiceUI(context, ref, correctWord, options),
+      typing: (wordToReview) => _buildTypingUI(context, ref, wordToReview),
+    );
+  }
 
-    Widget _buildFeedbackCard(BuildContext context, WidgetRef ref, AnswerResult result) {
+  Widget _buildMultipleChoiceUI(BuildContext context, WidgetRef ref, VocabularyItem correctWord, List<VocabularyItem> options) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          correctWord.englishDefinition ?? 'Definition not available',
+           style: Theme.of(context).textTheme.headlineSmall,
+           textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 32),
+        ...options.map((option) => Padding(
+          padding: const EdgeInsets.only(bottom: 12.0),
+          child: SizedBox(
+            width: double.infinity,
+            child: OutlinedButton(
+              onPressed: () {
+                 ref.read(reviewControllerProvider.notifier).submitAnswer(option);
+              },
+              child: Text(option.word),
+            ),
+          ),
+        )),
+      ],
+    );
+  }
+
+  Widget _buildTypingUI(BuildContext context, WidgetRef ref, VocabularyItem wordToReview) {
+    final textController = TextEditingController();
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          wordToReview.englishDefinition ?? 'Definition not available',
+          style: Theme.of(context).textTheme.headlineSmall,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 32),
+        TextField(
+          controller: textController,
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            labelText: 'Type the word',
+          ),
+          onSubmitted: (value) {
+            ref.read(reviewControllerProvider.notifier).submitAnswer(value);
+          },
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: () {
+             ref.read(reviewControllerProvider.notifier).submitAnswer(textController.text);
+          },
+          child: const Text('Submit'),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFeedbackCard(BuildContext context, WidgetRef ref, AnswerResult result) {
     return Card(
       color: result.wasCorrect ? AppTheme.successGreen.withOpacity(0.1) : AppTheme.errorRed.withOpacity(0.1),
       child: Padding(
@@ -131,13 +176,14 @@ class ReviewScreen extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text( result.wasCorrect ? 'CHÍNH XÁC!' : 'CHƯA ĐÚNG',
+            Text(
+              result.wasCorrect ? 'CHÍNH XÁC!' : 'CHƯA ĐÚNG',
               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     color: result.wasCorrect ? AppTheme.successGreen : AppTheme.errorRed,
                   ),
             ),
             const Divider(height: 16),
-             Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
@@ -162,7 +208,10 @@ class ReviewScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            // ... rest of your fields ...
+            const SizedBox(height: 8),
+            Text('English: ${result.correctAnswer.englishDefinition}'),
+            const SizedBox(height: 8),
+            Text('SRS Stage: ${result.updatedProgress.srsStage}'),
           ],
         ),
       ),

@@ -10,7 +10,9 @@ _UserProgress _$UserProgressFromJson(Map<String, dynamic> json) =>
     _UserProgress(
       vocabularyId: json['vocabularyId'] as String,
       srsStage: (json['srsStage'] as num).toInt(),
-      nextReviewDate: DateTime.parse(json['nextReviewDate'] as String),
+      nextReviewDate: const TimestampConverter().fromJson(
+        json['nextReviewDate'] as Timestamp,
+      ),
       correctStreak: (json['correctStreak'] as num?)?.toInt() ?? 0,
       totalReviews: (json['totalReviews'] as num?)?.toInt() ?? 0,
       correctReviews: (json['correctReviews'] as num?)?.toInt() ?? 0,
@@ -22,15 +24,16 @@ _UserProgress _$UserProgressFromJson(Map<String, dynamic> json) =>
       isLearned: json['isLearned'] as bool? ?? false,
     );
 
-Map<String, dynamic> _$UserProgressToJson(_UserProgress instance) =>
-    <String, dynamic>{
-      'vocabularyId': instance.vocabularyId,
-      'srsStage': instance.srsStage,
-      'nextReviewDate': instance.nextReviewDate.toIso8601String(),
-      'correctStreak': instance.correctStreak,
-      'totalReviews': instance.totalReviews,
-      'correctReviews': instance.correctReviews,
-      'difficultyMultiplier': instance.difficultyMultiplier,
-      'lastReviewDate': instance.lastReviewDate?.toIso8601String(),
-      'isLearned': instance.isLearned,
-    };
+Map<String, dynamic> _$UserProgressToJson(
+  _UserProgress instance,
+) => <String, dynamic>{
+  'vocabularyId': instance.vocabularyId,
+  'srsStage': instance.srsStage,
+  'nextReviewDate': const TimestampConverter().toJson(instance.nextReviewDate),
+  'correctStreak': instance.correctStreak,
+  'totalReviews': instance.totalReviews,
+  'correctReviews': instance.correctReviews,
+  'difficultyMultiplier': instance.difficultyMultiplier,
+  'lastReviewDate': instance.lastReviewDate?.toIso8601String(),
+  'isLearned': instance.isLearned,
+};
